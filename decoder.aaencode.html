@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>Decoder for aaEncode</title>
+    <script type="text/javascript">
+        function cls()
+        {
+            document.getElementById("dst").value = '';
+        }
+        
+        function aadecode(encodedText) {
+            cls();
+            //get string from src
+            var encodedText = document.getElementById("src").value;
+            var evalPreamble = "(\uFF9F\u0414\uFF9F) ['_'] ( (\uFF9F\u0414\uFF9F) ['_'] (";
+            var decodePreamble = "( (\uFF9F\u0414\uFF9F) ['_'] (";
+            var evalPostamble = ") (\uFF9F\u0398\uFF9F)) ('_');";
+            var decodePostamble = ") ());";
+            
+            // strip beginning/ending space.
+            encodedText = encodedText.replace(/^\s*/, "").replace(/\s*$/, "");
+            
+            // returns empty text for empty input.
+            if (/^\s*$/.test(encodedText)) {
+                return "";
+            }
+            // check if it is encoded.
+            if (encodedText.lastIndexOf(evalPreamble) < 0) {
+                throw new Error("Given code is not encoded as aaencode.");
+            }
+            if (encodedText.lastIndexOf(evalPostamble) != encodedText.length - evalPostamble.length) {
+                throw new Error("Given code is not encoded as aaencode.");
+            }
+            var decodingScript = encodedText.replace(evalPreamble, decodePreamble).replace(evalPostamble, decodePostamble);
+            document.getElementById("dst").value = eval(decodingScript);
+            document.getElementById("letters").innerHTML = document.getElementById("dst").value.length;    
+        }
+
+    </script>
+</head>
+<body>
+Input the aaencode here: 
+<textarea id="src" style="width:100%;height:5em" cols="" rows=""></textarea>
+<br>
+Decoded aaencode String:
+<textarea id="dst" style="width:100%;height:5em" cols="" rows=""></textarea><br>
+<input type="button" id="Decode" value="Validate" onClick="javascript:aadecode()" /><br>
+<div>
+	<span id="letters">0</span> character(s)
+</div>
+</body>
+</html>
